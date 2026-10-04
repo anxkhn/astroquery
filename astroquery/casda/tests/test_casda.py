@@ -158,6 +158,24 @@ def test_login_no_default_user():
     assert hasattr(casda, '_auth') is False
 
 
+def test_parse_result_error(monkeypatch):
+    response = MockResponse(b'<VOTABLE/>')
+
+    def fail_read(*args, **kwargs):
+        raise ValueError('No table found')
+
+    messages = []
+
+    def capture_log(message, *args):
+        messages.append(message % args)
+
+    monkeypatch.setattr(Table, 'read', fail_read)
+    monkeypatch.setattr(log, 'info', capture_log)
+
+    assert Casda._parse_result(response, verbose=True) is response
+    assert messages == ['Failed to convert query result to table: No table found']
+
+
 @pytest.mark.skip('No keyring backend on the CI server')
 def test_login_keyring(patch_get):
     casda = Casda()

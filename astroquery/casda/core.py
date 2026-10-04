@@ -222,7 +222,7 @@ class CasdaClass(QueryWithLogin):
         except ValueError as e:
             # catch common errors here, but never use bare excepts
             # return raw result/ handle in some way
-            log.info("Failed to convert query result to table", e)
+            log.info("Failed to convert query result to table: %s", e)
             return response
 
     def filter_out_unreleased(self, table):

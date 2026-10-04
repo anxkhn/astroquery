@@ -190,6 +190,8 @@ ipac.irsa
 casda
 ^^^^^
 
+- Fix error logging when a query result cannot be parsed as a table, allowing
+  the raw response to be returned instead of raising a logging formatting error.
 - Preserve the percent-encoding of staged file URLs so that pre-signed S3
   download URLs remain valid. Previously the URLs were unquoted, which corrupted
   pre-signed URLs and could raise errors when parsed by ``urllib``. [#3636]
