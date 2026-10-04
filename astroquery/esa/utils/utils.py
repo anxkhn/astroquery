@@ -971,6 +971,8 @@ def resolve_target(url, session, target_name, target_resolver):
         with session.get(resolver_url, stream=True) as response:
             response.raise_for_status()
             target_result = response.json()
+            if not target_result['objects']:
+                raise ValueError('No matching objects found')
             if target_result['objects']:
                 ra = target_result['objects'][0]['raDegrees']
                 dec = target_result['objects'][0]['decDegrees']

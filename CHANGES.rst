@@ -115,6 +115,12 @@ vo_conesearch
 Service fixes and enhancements
 ------------------------------
 
+esa.utils
+^^^^^^^^^
+
+- Raise an informative ``ValueError`` when target resolution returns no objects,
+  instead of an ``UnboundLocalError``.
+
 esa.xmm_newton
 ^^^^^^^^^^^^^^
 

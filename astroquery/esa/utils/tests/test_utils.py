@@ -290,6 +290,17 @@ class TestEsaUtils:
                                     target_name='dummy_target', target_resolver='ALL')
         assert 'This target cannot be resolved' in err.value.args[0]
 
+    @patch('astroquery.esa.utils.utils.ESAAuthSession.get')
+    def test_resolve_target_empty(self, mock_get):
+        mock_response = Mock()
+        mock_response.json.return_value = {'objects': []}
+        mock_get.return_value.__enter__.return_value = mock_response
+
+        with pytest.raises(ValueError, match='This target cannot be resolved'):
+            esautils.resolve_target(url='http://dummyurl.com/target_resolver',
+                                    session=esautils.ESAAuthSession(),
+                                    target_name='unknown_target', target_resolver='ALL')
+
     # Tests to for EsaTap class
 
     def test_get_alternative_tap(self):
