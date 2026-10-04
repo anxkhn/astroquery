@@ -115,6 +115,11 @@ vo_conesearch
 Service fixes and enhancements
 ------------------------------
 
+esa.utils
+^^^^^^^^^
+
+- Honor ``output_dir`` when extracting tar and zip archives with ``extract_file``.
+
 esa.xmm_newton
 ^^^^^^^^^^^^^^
 

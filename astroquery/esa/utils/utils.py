@@ -840,15 +840,13 @@ def extract_file(file_path, output_dir=None):
         file_path (str):
             Path to the archive file (.tar, .tar.gz, or .zip).
         output_dir (str, optional):
-            Directory to store the extracted files. If None, a directory
-            with the same name as the archive file (minus the extension)
-            is created.
+            Directory to store the extracted files. Existing directories are
+            reused and matching files may be overwritten. If None, a timestamped
+            directory based on the archive name is created beside the archive.
 
     Returns:
         list: List of paths to the extracted files.
     """
-    if not output_dir:
-        output_dir = os.path.abspath(file_path)
     if esatar.is_tarfile(file_path):
         with esatar.open(file_path, "r") as tar_ref:
             return extract_from_tar(tar_ref, file_path, output_dir)
@@ -871,7 +869,10 @@ def extract_from_tar(tar, file_path, output_dir=None):
     Extract files from a tar file (both .tar and .tar.gz formats).
     """
     # Prepare the output directory
-    output_dir = prepare_output_dir(file_path)
+    if output_dir is None:
+        output_dir = prepare_output_dir(file_path)
+    else:
+        os.makedirs(output_dir, exist_ok=True)
 
     # Extract all files into the specified directory
     tar.extractall(output_dir)
@@ -887,7 +888,10 @@ def extract_from_zip(file_path, output_dir=None):
     """
     with zipfile.ZipFile(file_path, 'r') as zip_ref:
         # Prepare the output directory
-        output_dir = prepare_output_dir(file_path)
+        if output_dir is None:
+            output_dir = prepare_output_dir(file_path)
+        else:
+            os.makedirs(output_dir, exist_ok=True)
 
         # Extract all files into the specified directory
         zip_ref.extractall(output_dir)

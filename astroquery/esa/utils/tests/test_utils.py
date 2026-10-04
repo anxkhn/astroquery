@@ -11,6 +11,9 @@ European Space Agency (ESA)
 import os.path
 import shutil
 import tempfile
+import tarfile
+import zipfile
+from io import BytesIO
 from unittest.mock import patch, Mock, PropertyMock
 
 import astroquery.esa.utils.utils as esautils
@@ -98,6 +101,48 @@ class DummyTapClass(EsaTap):
 
 
 class TestEsaUtils:
+
+    @pytest.mark.parametrize('archive_type', ['tar', 'zip'])
+    @pytest.mark.parametrize('existing', [False, True])
+    def test_extract_file_output_dir(self, tmp_path, archive_type, existing):
+        archive_path = tmp_path / f'data.{archive_type}'
+        if archive_type == 'tar':
+            with tarfile.open(archive_path, 'w') as archive:
+                member = tarfile.TarInfo('data.fits')
+                member.size = 4
+                archive.addfile(member, BytesIO(b'data'))
+        else:
+            with zipfile.ZipFile(archive_path, 'w') as archive:
+                archive.writestr('data.fits', b'data')
+
+        destination = tmp_path / 'requested'
+        if existing:
+            destination.mkdir()
+            (destination / 'keep.txt').write_text('keep')
+        files = esautils.extract_file(archive_path, output_dir=destination)
+        assert files == [str(destination / 'data.fits')]
+        assert (destination / 'data.fits').read_bytes() == b'data'
+        if existing:
+            assert (destination / 'keep.txt').read_text() == 'keep'
+
+    @pytest.mark.parametrize('archive_type', ['tar', 'zip'])
+    def test_extract_file_default_dir(self, tmp_path, archive_type):
+        archive_path = tmp_path / f'data.{archive_type}'
+        if archive_type == 'tar':
+            with tarfile.open(archive_path, 'w') as archive:
+                member = tarfile.TarInfo('data.fits')
+                member.size = 4
+                archive.addfile(member, BytesIO(b'data'))
+        else:
+            with zipfile.ZipFile(archive_path, 'w') as archive:
+                archive.writestr('data.fits', b'data')
+
+        with patch('astroquery.esa.utils.utils.datetime.datetime') as clock:
+            clock.now.return_value.strftime.return_value = '260101000000'
+            files = esautils.extract_file(archive_path)
+        destination = tmp_path / 'data_260101000000'
+        assert files == [str(destination / 'data.fits')]
+        assert (destination / 'data.fits').read_bytes() == b'data'
 
     @patch('pyvo.auth.authsession.AuthSession._request')
     def test_esa_auth_session_url(self, mock_get):
