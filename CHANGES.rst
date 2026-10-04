@@ -118,7 +118,7 @@ Service fixes and enhancements
 esa.utils
 ^^^^^^^^^
 
-- Honor ``output_dir`` when extracting tar and zip archives with ``extract_file``.
+- Honor ``output_dir`` when extracting tar and zip archives with ``extract_file``. [#3678]
 
 esa.xmm_newton
 ^^^^^^^^^^^^^^
