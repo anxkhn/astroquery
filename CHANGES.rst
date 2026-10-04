@@ -119,7 +119,7 @@ esa.utils
 ^^^^^^^^^
 
 - Raise an informative ``ValueError`` when target resolution returns no objects,
-  instead of an ``UnboundLocalError``.
+  instead of an ``UnboundLocalError``. [#3677]
 
 esa.xmm_newton
 ^^^^^^^^^^^^^^
